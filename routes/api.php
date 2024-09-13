@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Authentications\Controllers\AuthController;
+use App\Http\Controllers\Api\Roles\Controllers\ApiRoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,7 @@ Route::controller(AuthController::class)->group(function () {
         Route::get('user', 'userProfile');
         Route::get('logout', 'userLogout');
     });
+
+    Route::apiResource('roles', ApiRoleController::class);
+
 });

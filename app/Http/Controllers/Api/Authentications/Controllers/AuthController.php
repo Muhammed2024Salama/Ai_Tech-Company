@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\Authentications\Controllers;
 
 use App\Helper\ResponseHelper;
-use App\Http\Controllers\Api\Authentications\Requests\LoginRequest;
-use App\Http\Controllers\Api\Authentications\Requests\RegisterRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Interface\Authentications\AuthInterface;
 use Exception;
 

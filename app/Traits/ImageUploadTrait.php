@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecommerce\Base\Traits;
+namespace App\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;

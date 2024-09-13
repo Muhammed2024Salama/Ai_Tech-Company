@@ -16,20 +16,28 @@ class PostController extends Controller
 {
     use ImageUploadTrait;
 
-    // Get all posts
+    /**
+     * @return mixed
+     */
     public function index()
     {
         $posts = Post::all();
         return ResponseHelper::success('success', 'Posts retrieved successfully', $posts);
     }
 
-    // Get a single post
+    /**
+     * @param Post $post
+     * @return mixed
+     */
     public function show(Post $post)
     {
         return ResponseHelper::success('success', 'Post retrieved successfully', $post);
     }
 
-    // Create a new post
+    /**
+     * @param PostRequest $request
+     * @return mixed
+     */
     public function store(PostRequest $request)
     {
         // Get the authenticated user's ID
@@ -40,10 +48,8 @@ class PostController extends Controller
             return ResponseHelper::error('error', 'Unauthorized. Please log in.', 401);
         }
 
-        // Upload image if present
         $imagePath = $this->uploadImage($request, 'image', 'uploads/posts');
 
-        // Create the post
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->input("content"),
@@ -56,7 +62,11 @@ class PostController extends Controller
         return ResponseHelper::success('success', 'Post created successfully', $post, 201);
     }
 
-    // Update an existing post
+    /**
+     * @param UpdatePostRequest $request
+     * @param Post $post
+     * @return mixed
+     */
     public function update(UpdatePostRequest $request, Post $post)
     {
         $imagePath = $this->updateImage($request, 'image', 'uploads/posts', $post->image);
@@ -72,7 +82,10 @@ class PostController extends Controller
         return ResponseHelper::success('success', 'Post updated successfully', $post);
     }
 
-    // Delete a post
+    /**
+     * @param Post $post
+     * @return mixed
+     */
     public function destroy(Post $post)
     {
         $this->deleteImage($post->image);

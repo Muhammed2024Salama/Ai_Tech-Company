@@ -14,18 +14,33 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create the user
         $user = User::create([
             'name' => 'Muhammed Salama',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('123456')
         ]);
 
-        $role = Role::create(['name' => 'Admin']);
+        // Create Admin role if it doesn't exist
+        $role = Role::firstOrCreate(['name' => 'Admin']);
 
-        $permissions = Permission::pluck('id','id')->all();
+        // Define permissions
+        $permissions = [
+            'role-list',
+            'role-create',
+            'role-edit',
+            'role-delete'
+        ];
 
-        $role->syncPermissions($permissions);
+        // Create permissions if they do not exist
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
 
-        $user->assignRole([$role->id]);
+        // Sync all permissions to the Admin role
+        $role->syncPermissions(Permission::all());
+
+        // Assign the Admin role to the user
+        $user->assignRole('Admin');
     }
 }

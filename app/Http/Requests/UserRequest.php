@@ -22,10 +22,10 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email,' . $this->user,
-            'password' => 'nullable|same:confirm-password',
-            'role' => 'required|exists:roles,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed|min:6',
+            'roles' => 'required|array',  // Change to accept 'roles' array
         ];
     }
 }

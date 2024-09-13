@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Api\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Arr;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {

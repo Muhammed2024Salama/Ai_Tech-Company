@@ -3,7 +3,7 @@
 namespace App\Repository\Authentications;
 
 use App\Interface\Authentications\AuthInterface;
-use App\Models\User;
+use App\Models\Api\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 

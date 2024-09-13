@@ -13,8 +13,14 @@ use Spatie\Permission\Models\Permission;
 
 class ApiRoleController extends Controller
 {
+    /**
+     * @var RoleInterface
+     */
     protected $roleRepository;
 
+    /**
+     * @param RoleInterface $roleRepository
+     */
     public function __construct(RoleInterface $roleRepository)
     {
         $this->roleRepository = $roleRepository;
@@ -25,12 +31,20 @@ class ApiRoleController extends Controller
         $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         $roles = $this->roleRepository->getAllRoles($request);
         return RoleResource::collection($roles)->response();
     }
 
+    /**
+     * @param StoreRoleRequest $request
+     * @return JsonResponse
+     */
     public function store(StoreRoleRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -38,6 +52,10 @@ class ApiRoleController extends Controller
         return (new RoleResource($role))->response()->setStatusCode(201);
     }
 
+    /**
+     * @param Role $role
+     * @return JsonResponse
+     */
     public function show(Role $role): JsonResponse
     {
         $roleData = $this->roleRepository->getRoleById($role);
@@ -47,6 +65,11 @@ class ApiRoleController extends Controller
         ]);
     }
 
+    /**
+     * @param StoreRoleRequest $request
+     * @param Role $role
+     * @return JsonResponse
+     */
     public function update(StoreRoleRequest $request, Role $role): JsonResponse
     {
         $validated = $request->validated();
@@ -54,6 +77,10 @@ class ApiRoleController extends Controller
         return (new RoleResource($updatedRole))->response();
     }
 
+    /**
+     * @param Role $role
+     * @return JsonResponse
+     */
     public function destroy(Role $role): JsonResponse
     {
         $this->roleRepository->deleteRole($role);

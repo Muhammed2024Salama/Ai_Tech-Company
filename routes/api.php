@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\ApiUserController;
 use App\Http\Controllers\Api\Authentications\Controllers\AuthController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\Roles\Controllers\ApiRoleController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 //Route::get('/user', function (Request $request) {
@@ -26,4 +28,10 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::apiResource('roles', ApiRoleController::class);
 
+    Route::apiResource('posts', PostController::class);
+
+    Route::apiResource('posts.comments', CommentController::class);
+
+    Route::apiResource('users', ApiUserController::class);
 });
+

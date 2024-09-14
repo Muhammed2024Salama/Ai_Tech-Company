@@ -73,7 +73,7 @@ class PostController extends Controller
 
         $post->update([
             'title' => $request->title,
-            'content' => $request->input("content"),
+            'content' => $request->input('content'),
             'image' => $imagePath ?? $post->image,
             'published_at' => $request->published_at ?? now(),
             'status' => $request->status,

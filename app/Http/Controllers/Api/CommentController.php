@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CommentRequest;
 use App\Http\Resources\CommentResource;
+use App\Interface\CommentInterface;
 use App\Models\Api\Comment;
 use App\Models\Api\Post;
 use Illuminate\Http\Request;
@@ -15,12 +16,26 @@ use App\Helper\ResponseHelper;
 class CommentController extends Controller
 {
     /**
+     * @var CommentInterface
+     */
+    protected $commentRepository;
+
+    /**
+     * @param CommentInterface $commentRepository
+     */
+    public function __construct(CommentInterface $commentRepository)
+    {
+        $this->commentRepository = $commentRepository;
+    }
+
+    /**
      * @param Post $post
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(Post $post)
     {
-        return CommentResource::collection($post->comments()->with('user')->get());
+        $comments = $this->commentRepository->getAllCommentsByPost($post);
+        return CommentResource::collection($comments);
     }
 
     /**
@@ -30,12 +45,13 @@ class CommentController extends Controller
      */
     public function show(Post $post, Comment $comment)
     {
-        // تحقق أن التعليق ينتمي للمنشور
-        if ($comment->post_id !== $post->id) {
+        $comment = $this->commentRepository->getCommentById($post, $comment);
+
+        if (!$comment) {
             return response()->json(['message' => 'Comment does not belong to this post'], 403);
         }
 
-        return new CommentResource($comment->load('user'));
+        return new CommentResource($comment);
     }
 
     /**
@@ -45,11 +61,12 @@ class CommentController extends Controller
      */
     public function store(CommentRequest $request, Post $post)
     {
-        $comment = $post->comments()->create([
+        $data = [
             'user_id' => auth()->id(),
-            'content' => $request->input("content"),
-        ]);
+            'content' => $request->input('content')
+        ];
 
+        $comment = $this->commentRepository->createComment($post, $data);
         return new CommentResource($comment->load('user'));
     }
 
@@ -61,11 +78,11 @@ class CommentController extends Controller
      */
     public function update(CommentRequest $request, Post $post, Comment $comment)
     {
-        if ($comment->post_id !== $post->id) {
+        $comment = $this->commentRepository->updateComment($post, $comment, $request->validated());
+
+        if (!$comment) {
             return response()->json(['message' => 'Comment does not belong to this post'], 403);
         }
-
-        $comment->update($request->validated());
 
         return new CommentResource($comment->load('user'));
     }
@@ -77,11 +94,11 @@ class CommentController extends Controller
      */
     public function destroy(Post $post, Comment $comment)
     {
-        if ($comment->post_id !== $post->id) {
+        $deleted = $this->commentRepository->deleteComment($post, $comment);
+
+        if (!$deleted) {
             return response()->json(['message' => 'Comment does not belong to this post'], 403);
         }
-
-        $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully'], 200);
     }

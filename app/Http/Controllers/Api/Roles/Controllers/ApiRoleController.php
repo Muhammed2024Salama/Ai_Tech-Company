@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Roles\Controllers;
 
+use App\Helper\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Resources\RoleResource;
@@ -38,7 +39,7 @@ class ApiRoleController extends Controller
     public function index(Request $request): JsonResponse
     {
         $roles = $this->roleRepository->getAllRoles($request);
-        return RoleResource::collection($roles)->response();
+        return ResponseHelper::success('success', 'Roles retrieved successfully', RoleResource::collection($roles));
     }
 
     /**
@@ -49,7 +50,7 @@ class ApiRoleController extends Controller
     {
         $validated = $request->validated();
         $role = $this->roleRepository->createRole($validated);
-        return (new RoleResource($role))->response()->setStatusCode(201);
+        return ResponseHelper::success('success', 'Role created successfully', new RoleResource($role), 201);
     }
 
     /**
@@ -59,7 +60,7 @@ class ApiRoleController extends Controller
     public function show(Role $role): JsonResponse
     {
         $roleData = $this->roleRepository->getRoleById($role);
-        return response()->json([
+        return ResponseHelper::success('success', 'Role retrieved successfully', [
             'role' => new RoleResource($roleData['role']),
             'permissions' => $roleData['permissions'],
         ]);
@@ -74,7 +75,7 @@ class ApiRoleController extends Controller
     {
         $validated = $request->validated();
         $updatedRole = $this->roleRepository->updateRole($role, $validated);
-        return (new RoleResource($updatedRole))->response();
+        return ResponseHelper::success('success', 'Role updated successfully', new RoleResource($updatedRole));
     }
 
     /**
@@ -84,6 +85,6 @@ class ApiRoleController extends Controller
     public function destroy(Role $role): JsonResponse
     {
         $this->roleRepository->deleteRole($role);
-        return response()->json(null, 204);
+        return ResponseHelper::success('success', 'Role deleted successfully', null, 204);
     }
 }

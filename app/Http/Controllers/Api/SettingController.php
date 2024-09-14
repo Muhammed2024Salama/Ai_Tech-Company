@@ -49,13 +49,17 @@ class SettingController extends Controller
         $validated = $request->validated();
         $setting = Setting::create($validated);
 
-        // Handle logo and favicon uploads
         if ($request->hasFile('logo')) {
-            $this->storeLogo($request->file('logo'), $setting);
+            $logoPath = $this->handleLogoUpload($request->file('logo')); // Corrected method name
+            $setting->logo = $logoPath;
         }
+
         if ($request->hasFile('favicon')) {
-            $this->storeFavicon($request->file('favicon'), $setting);
+            $faviconPath = $this->handleFaviconUpload($request->file('favicon')); // Corrected method name
+            $setting->favicon = $faviconPath;
         }
+
+        $setting->save();
 
         return ResponseHelper::success('success', 'Setting created successfully.', new SettingResource($setting), 201);
     }
@@ -69,16 +73,22 @@ class SettingController extends Controller
      */
     public function update(UpdateSettingRequest $request, Setting $setting): JsonResponse
     {
+        // dd($request->all());
         $validated = $request->validated();
+
         $setting->update($validated);
 
-        // Handle logo and favicon updates
         if ($request->hasFile('logo')) {
-            $this->updateLogo($request->file('logo'), $setting);
+            $logoPath = $this->handleLogoUpload($request->file('logo'));
+            $setting->logo = $logoPath;
         }
+
         if ($request->hasFile('favicon')) {
-            $this->updateFavicon($request->file('favicon'), $setting);
+            $faviconPath = $this->handleFaviconUpload($request->file('favicon'));
+            $setting->favicon = $faviconPath;
         }
+
+        $setting->save();
 
         return ResponseHelper::success('success', 'Setting updated successfully.', new SettingResource($setting));
     }

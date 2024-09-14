@@ -13,7 +13,10 @@ trait FaviconTrait
     public function handleFaviconUpload($faviconFile)
     {
         if ($faviconFile) {
-            $path = $faviconFile->store('favicons', 'public');
+            /**
+             * Save the favicon in 'public/favicon' folder
+             */
+            $path = $faviconFile->store('favicon', 'public');
             return $path;
         }
         return null;

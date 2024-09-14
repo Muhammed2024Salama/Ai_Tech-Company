@@ -13,7 +13,10 @@ trait LogoTrait
     public function handleLogoUpload($logoFile)
     {
         if ($logoFile) {
-            $path = $logoFile->store('logos', 'public');
+            /**
+             * Save the logo in 'public/logo' folder
+             */
+            $path = $logoFile->store('logo', 'public');
             return $path;
         }
         return null;

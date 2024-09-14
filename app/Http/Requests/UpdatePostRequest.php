@@ -29,4 +29,14 @@ class UpdatePostRequest extends FormRequest
             'published_at' => 'nullable|date',
         ];
     }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'published_at' => $this->input('published_at') ?? now(),
+        ]);
+    }
 }

@@ -22,13 +22,13 @@ class UpdateSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'logo' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
-            'favicon' => 'nullable|file|mimes:png,ico|max:1024',
-            'app_name' => 'nullable|string',
-            'app_status' => 'required|boolean',
-            'social_media' => 'nullable|string',
+            'app_name' => 'sometimes|string|max:255',
+            'app_status' => 'sometimes|boolean',
+            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif',
+            'favicon' => 'nullable|file|mimes:ico,png',
+            'social_media' => 'nullable|array',
             'email' => 'nullable|email',
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|string|max:15',
         ];
     }
 }

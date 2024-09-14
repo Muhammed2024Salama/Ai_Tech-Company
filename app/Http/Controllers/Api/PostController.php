@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
+use App\Interface\PostInterface;
 use App\Models\Api\Post;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\JsonResponse;
@@ -14,82 +15,78 @@ use Illuminate\Http\JsonResponse;
 
 class PostController extends Controller
 {
-    use ImageUploadTrait;
+    /**
+     * @var PostInterface
+     */
+    protected $postRepository;
 
     /**
-     * @return mixed
+     * @param PostInterface $postRepository
      */
-    public function index()
+    public function __construct(PostInterface $postRepository)
     {
-        $posts = Post::all();
+        $this->postRepository = $postRepository;
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
+    {
+        $posts = $this->postRepository->getAllPosts();
         return ResponseHelper::success('success', 'Posts retrieved successfully', $posts);
     }
 
     /**
      * @param Post $post
-     * @return mixed
+     * @return JsonResponse
      */
-    public function show(Post $post)
+    public function show(Post $post): JsonResponse
     {
+        $post = $this->postRepository->getPostById($post);
         return ResponseHelper::success('success', 'Post retrieved successfully', $post);
     }
 
     /**
      * @param PostRequest $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function store(PostRequest $request)
+    public function store(PostRequest $request): JsonResponse
     {
-        // Get the authenticated user's ID
-        $userId = auth()->id();
+        $data = $request->validated();
+        $data['request'] = $request;
 
-        // Check if a user is authenticated
-        if (!$userId) {
+        if (!auth()->check()) {
             return ResponseHelper::error('error', 'Unauthorized. Please log in.', 401);
         }
 
-        $imagePath = $this->uploadImage($request, 'image', 'uploads/posts');
+        $post = $this->postRepository->createPost($data);
 
-        $post = Post::create([
-            'title' => $request->title,
-            'content' => $request->input("content"),
-            'image' => $imagePath,
-            'status' => $request->status,
-            'published_at' => $request->published_at ?? now(),
-            'user_id' => $userId, // Assign the authenticated user ID
-        ]);
-
-        return ResponseHelper::success('success', 'Post created successfully', $post, 201);
+        return ResponseHelper::success('success', 'Post created successfully', new PostResource($post), 201);
     }
 
     /**
      * @param UpdatePostRequest $request
      * @param Post $post
-     * @return mixed
+     * @return JsonResponse
      */
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
-        $imagePath = $this->updateImage($request, 'image', 'uploads/posts', $post->image);
+        $data = $request->validated();
+        $data['request'] = $request;
 
-        $post->update([
-            'title' => $request->title,
-            'content' => $request->input('content'),
-            'image' => $imagePath ?? $post->image,
-            'published_at' => $request->published_at ?? now(),
-            'status' => $request->status,
-        ]);
+        $post = $this->postRepository->updatePost($post, $data);
 
-        return ResponseHelper::success('success', 'Post updated successfully', $post);
+        return ResponseHelper::success('success', 'Post updated successfully', new PostResource($post));
     }
 
     /**
      * @param Post $post
-     * @return mixed
+     * @return JsonResponse
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post): JsonResponse
     {
-        $this->deleteImage($post->image);
-        $post->delete();
+        $this->postRepository->deletePost($post);
 
         return ResponseHelper::success('success', 'Post deleted successfully');
     }

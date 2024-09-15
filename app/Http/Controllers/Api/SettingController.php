@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Http\Resources\SettingResource;
+use App\Interface\SettingInterface;
 use App\Models\Api\Setting;
 use App\Traits\FaviconTrait;
 use App\Traits\LogoTrait;
@@ -14,107 +15,88 @@ use Illuminate\Http\JsonResponse;
 
 class SettingController extends Controller
 {
-    use LogoTrait, FaviconTrait;
+    /**
+     * @var SettingInterface
+     */
+    protected $settingRepo;
 
     /**
-     * Display a listing of the settings.
-     *
+     * @param SettingInterface $settingRepo
+     */
+    public function __construct(SettingInterface $settingRepo)
+    {
+        $this->settingRepo = $settingRepo;
+
+        $this->middleware('permission:setting-list|setting-create|setting-edit|setting-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:setting-create', ['only' => ['store']]);
+        $this->middleware('permission:setting-edit', ['only' => ['update']]);
+        $this->middleware('permission:setting-delete', ['only' => ['destroy']]);
+    }
+
+    /**
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
-        $settings = Setting::all();
+        $settings = $this->settingRepo->getAllSettings();
         return ResponseHelper::success('success', null, SettingResource::collection($settings));
     }
 
     /**
-     * Display the specified setting.
-     *
-     * @param Setting $setting
+     * @param int $id
      * @return JsonResponse
      */
-    public function show(Setting $setting): JsonResponse
+    public function show(int $id): JsonResponse
     {
+        $setting = $this->settingRepo->getSettingById($id);
         return ResponseHelper::success('success', null, new SettingResource($setting));
     }
 
     /**
-     * Store a newly created setting in storage.
-     *
      * @param StoreSettingRequest $request
      * @return JsonResponse
      */
     public function store(StoreSettingRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $setting = Setting::create($validated);
-
-        if ($request->hasFile('logo')) {
-            $logoPath = $this->handleLogoUpload($request->file('logo')); // Corrected method name
-            $setting->logo = $logoPath;
-        }
-
-        if ($request->hasFile('favicon')) {
-            $faviconPath = $this->handleFaviconUpload($request->file('favicon')); // Corrected method name
-            $setting->favicon = $faviconPath;
-        }
-
-        $setting->save();
+        $setting = $this->settingRepo->createSetting($validated);
 
         return ResponseHelper::success('success', 'Setting created successfully.', new SettingResource($setting), 201);
     }
 
     /**
-     * Update the specified setting in storage.
-     *
      * @param UpdateSettingRequest $request
-     * @param Setting $setting
+     * @param int $id
      * @return JsonResponse
      */
-    public function update(UpdateSettingRequest $request, Setting $setting): JsonResponse
+    public function update(UpdateSettingRequest $request, int $id): JsonResponse
     {
-        // dd($request->all());
         $validated = $request->validated();
+        $setting = $this->settingRepo->getSettingById($id);
+        $updatedSetting = $this->settingRepo->updateSetting($setting, $validated);
 
-        $setting->update($validated);
-
-        if ($request->hasFile('logo')) {
-            $logoPath = $this->handleLogoUpload($request->file('logo'));
-            $setting->logo = $logoPath;
-        }
-
-        if ($request->hasFile('favicon')) {
-            $faviconPath = $this->handleFaviconUpload($request->file('favicon'));
-            $setting->favicon = $faviconPath;
-        }
-
-        $setting->save();
-
-        return ResponseHelper::success('success', 'Setting updated successfully.', new SettingResource($setting));
+        return ResponseHelper::success('success', 'Setting updated successfully.', new SettingResource($updatedSetting));
     }
 
     /**
-     * Remove the specified setting from storage.
-     *
-     * @param Setting $setting
+     * @param int $id
      * @return JsonResponse
      */
-    public function destroy(Setting $setting): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $setting->delete();
+        $setting = $this->settingRepo->getSettingById($id);
+        $this->settingRepo->deleteSetting($setting);
         return ResponseHelper::success('success', 'Setting deleted successfully.');
     }
 
     /**
-     * Check if the application is active or inactive.
-     *
      * @return JsonResponse
      */
     public function checkAppStatus(): JsonResponse
     {
-        $setting = Setting::first();
+        $isActive = $this->settingRepo->checkAppStatus();
 
-        if (!$setting || !$setting->app_status) {
+        if (!$isActive) {
             return ResponseHelper::error('error', 'Application is currently inactive.');
         }
 

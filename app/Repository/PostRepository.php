@@ -12,7 +12,7 @@ class PostRepository implements PostInterface
     use ImageUploadTrait;
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection|mixed
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllPosts()
     {
@@ -30,11 +30,14 @@ class PostRepository implements PostInterface
 
     /**
      * @param array $data
-     * @return mixed
+     * @return Post
      */
     public function createPost(array $data)
     {
-        $data['image'] = $this->uploadImage($data['request'], 'image', 'uploads/posts');
+        if (isset($data['request'])) {
+            $data['image'] = $this->uploadImage($data['request'], 'image', 'uploads/posts');
+        }
+
         $data['user_id'] = auth()->id();
         $data['published_at'] = $data['published_at'] ?? now();
 
@@ -48,9 +51,10 @@ class PostRepository implements PostInterface
      */
     public function updatePost(Post $post, array $data)
     {
-        if (isset($data['image'])) {
+        if (isset($data['request']) && isset($data['image'])) {
             $data['image'] = $this->updateImage($data['request'], 'image', 'uploads/posts', $post->image);
         }
+
         $data['published_at'] = $data['published_at'] ?? now();
 
         $post->update($data);
@@ -63,7 +67,10 @@ class PostRepository implements PostInterface
      */
     public function deletePost(Post $post)
     {
-        $this->deleteImage($post->image);
+        if ($post->image) {
+            $this->deleteImage($post->image);
+        }
+
         $post->delete();
     }
 }

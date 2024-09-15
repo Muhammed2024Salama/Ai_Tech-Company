@@ -26,28 +26,40 @@ class PostController extends Controller
     public function __construct(PostInterface $postRepository)
     {
         $this->postRepository = $postRepository;
+
+        // Middleware for permissions
+        $this->middleware('permission:post-list|post-create|post-edit|post-delete', ['only' => ['index', 'store']]);
+        $this->middleware('permission:post-create', ['only' => ['store']]);
+        $this->middleware('permission:post-edit', ['only' => ['update']]);
+        $this->middleware('permission:post-delete', ['only' => ['destroy']]);
     }
 
     /**
+     * Display a listing of posts.
+     *
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
         $posts = $this->postRepository->getAllPosts();
-        return ResponseHelper::success('success', 'Posts retrieved successfully', $posts);
+        return ResponseHelper::success('success', 'Posts retrieved successfully', PostResource::collection($posts));
     }
 
     /**
+     * Display the specified post.
+     *
      * @param Post $post
      * @return JsonResponse
      */
     public function show(Post $post): JsonResponse
     {
         $post = $this->postRepository->getPostById($post);
-        return ResponseHelper::success('success', 'Post retrieved successfully', $post);
+        return ResponseHelper::success('success', 'Post retrieved successfully', new PostResource($post));
     }
 
     /**
+     * Store a newly created post.
+     *
      * @param PostRequest $request
      * @return JsonResponse
      */
@@ -66,6 +78,8 @@ class PostController extends Controller
     }
 
     /**
+     * Update the specified post.
+     *
      * @param UpdatePostRequest $request
      * @param Post $post
      * @return JsonResponse
@@ -81,6 +95,8 @@ class PostController extends Controller
     }
 
     /**
+     * Remove the specified post.
+     *
      * @param Post $post
      * @return JsonResponse
      */

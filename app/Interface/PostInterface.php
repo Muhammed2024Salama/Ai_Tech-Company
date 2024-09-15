@@ -7,32 +7,32 @@ use App\Models\Api\Post;
 interface PostInterface
 {
     /**
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllPosts();
 
     /**
      * @param Post $post
-     * @return mixed
+     * @return Post
      */
     public function getPostById(Post $post);
 
     /**
      * @param array $data
-     * @return mixed
+     * @return Post
      */
     public function createPost(array $data);
 
     /**
      * @param Post $post
      * @param array $data
-     * @return mixed
+     * @return Post
      */
     public function updatePost(Post $post, array $data);
 
     /**
      * @param Post $post
-     * @return mixed
+     * @return void
      */
     public function deletePost(Post $post);
 }

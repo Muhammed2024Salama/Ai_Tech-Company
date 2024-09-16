@@ -29,6 +29,6 @@ class Setting extends Model
      * @var string[]
      */
     protected $casts = [
-        'app_status' => 'boolean', // Cast app_status as a boolean
+        'app_status' => 'boolean',
     ];
 }

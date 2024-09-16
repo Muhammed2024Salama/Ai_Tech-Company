@@ -12,17 +12,12 @@ class CommentNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @var Post
-     */
-    public $post;
+    public Post $post;
+    public Comment $comment;
 
     /**
-     * @var Comment
-     */
-    public $comment;
-
-    /**
+     * CommentNotification constructor.
+     *
      * @param Post $post
      * @param Comment $comment
      */
@@ -33,9 +28,11 @@ class CommentNotification extends Mailable
     }
 
     /**
-     * @return CommentNotification
+     * Build the message.
+     *
+     * @return $this
      */
-    public function build()
+    public function build(): CommentNotification
     {
         return $this->view('emails.comment_notification')
             ->with([

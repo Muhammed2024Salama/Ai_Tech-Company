@@ -25,7 +25,7 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed|min:6',
-            'roles' => 'required|array',  // Change to accept 'roles' array
+            'roles' => 'required|array',
         ];
     }
 }

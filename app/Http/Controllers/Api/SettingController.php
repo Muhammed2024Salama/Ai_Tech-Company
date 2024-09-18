@@ -27,10 +27,10 @@ class SettingController extends Controller
     {
         $this->settingRepo = $settingRepo;
 
-        $this->middleware('permission:setting-list|setting-create|setting-edit|setting-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:setting-create', ['only' => ['store']]);
-        $this->middleware('permission:setting-edit', ['only' => ['update']]);
-        $this->middleware('permission:setting-delete', ['only' => ['destroy']]);
+//        $this->middleware('permission:setting-list|setting-create|setting-edit|setting-delete', ['only' => ['index', 'show']]);
+//        $this->middleware('permission:setting-create', ['only' => ['store']]);
+//        $this->middleware('permission:setting-edit', ['only' => ['update']]);
+//        $this->middleware('permission:setting-delete', ['only' => ['destroy']]);
     }
 
     /**

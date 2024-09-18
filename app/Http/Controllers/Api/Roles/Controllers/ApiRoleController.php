@@ -25,11 +25,11 @@ class ApiRoleController extends Controller
     public function __construct(RoleInterface $roleRepository)
     {
         $this->roleRepository = $roleRepository;
-
-        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'store']]);
-        $this->middleware('permission:role-create', ['only' => ['store']]);
-        $this->middleware('permission:role-edit', ['only' => ['update']]);
-        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+//
+//        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'store']]);
+//        $this->middleware('permission:role-create', ['only' => ['store']]);
+//        $this->middleware('permission:role-edit', ['only' => ['update']]);
+//        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
 
     /**

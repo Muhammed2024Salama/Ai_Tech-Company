@@ -15,8 +15,8 @@ class SettingResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'logo' => $this->logo,
-            'favicon' => $this->favicon,
+            'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
+            'favicon' => $this->favicon ? asset('storage/app/public/' . $this->favicon) : null,
             'app_name' => $this->app_name,
             'app_status' => $this->app_status,
             'social_media' => $this->social_media,

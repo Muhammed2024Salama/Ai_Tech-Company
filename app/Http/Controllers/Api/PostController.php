@@ -28,10 +28,10 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
 
         // Middleware for permissions
-        $this->middleware('permission:post-list|post-create|post-edit|post-delete', ['only' => ['index', 'store']]);
-        $this->middleware('permission:post-create', ['only' => ['store']]);
-        $this->middleware('permission:post-edit', ['only' => ['update']]);
-        $this->middleware('permission:post-delete', ['only' => ['destroy']]);
+//        $this->middleware('permission:post-list|post-create|post-edit|post-delete', ['only' => ['index', 'store']]);
+//        $this->middleware('permission:post-create', ['only' => ['store']]);
+//        $this->middleware('permission:post-edit', ['only' => ['update']]);
+//        $this->middleware('permission:post-delete', ['only' => ['destroy']]);
     }
 
     /**
@@ -86,6 +86,7 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
+        // dd('knjenfewrkjfnerkfenrwkfwernfwerkfwne');
         $data = $request->validated();
         $data['request'] = $request;
 
